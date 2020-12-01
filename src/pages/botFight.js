@@ -8,6 +8,13 @@ const {Content} = Layout;
 
 function BotFight(){
     const [input,setInput] = useState("");
+    const [bots,setBots] = useState([]);
+
+    const submitBot = bot => {
+        const botsCopy = [...bots];
+        botsCopy.push(bot);
+        setBots(botsCopy);
+    }
 
     return (
         <Layout className="main-layout">
@@ -22,7 +29,7 @@ function BotFight(){
                             Ahh now you want to bring bots to defeat me . Bring them onnn!  
                         </p>
                         <p className="octopara">
-                            I'll smash your stupid bots back to the ghettos .. right where they belong ...git  
+                            I'll smash your stupid bots right back to where they belong ...  
                         </p>
                     </div> 
                 </div>
@@ -37,8 +44,9 @@ function BotFight(){
                         </div>
                         <div className="quarter-width">
                            <Button onClick={ () => {
+                               submitBot(input);
                                setInput("");
-                               }} danger type="primary">Reset All Bots</Button> 
+                            }} danger type="primary">Reset All Bots</Button> 
                         </div>
                         <div className="quarter-width">
                            <Button onClick={()=>{
