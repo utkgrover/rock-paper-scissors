@@ -4,7 +4,7 @@ import {Layout,Input,Button} from 'antd'
 import './components/commonStyles.css'
 import octoImage from './components/images/octopus.png';
 import calculateWinner from './bot/calculateWinner';
-import getBotMove from './bot/bot';
+import getBotMove,{bestSumMove} from './bot/bot';
 
 const {Content} = Layout;
 
@@ -54,79 +54,80 @@ function botvbot(bot1,bot2){
     return scores;
 }
 
-function calculateScores(bots){
-    let scores = [0];
-    //for(let i=0 ;i<bots.length+1; i++) scores.push(0);
-    bots.forEach( item => scores.push(0));
-    const botFunction = bots.map( item => new Function('moves',item));
+// function calculateScores(bots){
+//     let scores = [0];
+//     //for(let i=0 ;i<bots.length+1; i++) scores.push(0);
+//     bots.forEach( item => scores.push(0));
+//     const botFunction = bots.map( item => new Function('moves',item));
 
-    for(let i=0 ; i<bots.length ; i++){
+//     for(let i=0 ; i<bots.length ; i++){
 
-        const bot1 = new Function('moves',bots[i]);
-        let octomoves = [];//moves of input bot vs octo
+//         const bot1 = new Function('moves',bots[i]);
+//         let octomoves = [];//moves of input bot vs octo
 
-        for(let x=0 ; x<5 ; x++){
-            const move2 = bot1(octomoves);
-            const move1 = getBotMove(octomoves,'botFight');
+//         for(let x=0 ; x<5 ; x++){
+//             const move2 = bot1(octomoves);
+//             const move1 = getBotMove(octomoves,'botFight');
 
-            if( checkMove(move1) && checkMove(move2)) octomoves.push({myBot:move1,opponent:move2});
-        }
+//             if( checkMove(move1) && checkMove(move2)) octomoves.push({myBot:move1,opponent:move2});
+//         }
 
-        for(let x=0 ; x<20 ; x++){
-            const move2 = bot1(octomoves);
-            const move1 = getBotMove(octomoves,'botFight');
+//         for(let x=0 ; x<20 ; x++){
+//             const move2 = bot1(octomoves);
+//             const move1 = getBotMove(octomoves,'botFight');
 
-            //my bot will always make the correct move  
-            if( checkMove(move2)){
-                octomoves.push({myBot:move1,opponent:move2});
-                const winner = calculateWinner(move1,move2);
+//             //my bot will always make the correct move  
+//             if( checkMove(move2)){
+//                 octomoves.push({myBot:move1,opponent:move2});
+//                 const winner = calculateWinner(move1,move2);
 
-                if(winner === 'bot')scores[bots.length]+=1;
-                if(winner === 'player')scores[i]+=1;
-            };
-        }
+//                 if(winner === 'bot')scores[bots.length]+=1;
+//                 if(winner === 'player')scores[i]+=1;
+//             };
+//         }
 
 
-        for(let j=i+1 ; j<bots.length ; j++){
-            let moves = [];
+//         for(let j=i+1 ; j<bots.length ; j++){
+//             let moves = [];
 
-            const bot2 = new Function('moves',bots[j]);
+//             const bot2 = new Function('moves',bots[j]);
 
-            for(let x=0 ; x<5 ; x++){
-                const move1 = bot1(moves);
-                const move2 = bot2(moves);
+//             for(let x=0 ; x<5 ; x++){
+//                 const move1 = bot1(moves);
+//                 const move2 = bot2(moves);
 
-                if( checkMove(move1) && checkMove(move2)) moves.push({myBot:move1,opponent:move2});
-            }
+//                 if( checkMove(move1) && checkMove(move2)) moves.push({myBot:move1,opponent:move2});
+//             }
 
-            for(let x=0 ; x<20 ; x++){
-                const move1 = bot1(moves);
-                const move2 = bot2(moves);
+//             for(let x=0 ; x<20 ; x++){
+//                 const move1 = bot1(moves);
+//                 const move2 = bot2(moves);
 
-                //if both make correct moves 
-                if( checkMove(move1) && checkMove(move2)){
-                    moves.push({myBot:move1,opponent:move2});
-                    const winner = calculateWinner(move1,move2);
+//                 //if both make correct moves 
+//                 if( checkMove(move1) && checkMove(move2)){
+//                     moves.push({myBot:move1,opponent:move2});
+//                     const winner = calculateWinner(move1,move2);
 
-                    if(winner === 'bot')scores[i]+=1;
-                    if(winner === 'player')scores[j]+=1;
-                }else if( checkMove(move1)){
-                    scores[i]+=1;
-                }else{
-                    scores[j]+=1;
-                }
-            }
-        }
+//                     if(winner === 'bot')scores[i]+=1;
+//                     if(winner === 'player')scores[j]+=1;
+//                 }else if( checkMove(move1)){
+//                     scores[i]+=1;
+//                 }else{
+//                     scores[j]+=1;
+//                 }
+//             }
+//         }
 
         
-    }
+//     }
 
-    return scores;
-}
+//     return scores;
+// }
 
 function calculateScoresDummy(bots){
     
     const botFunction = bots.map( item => new Function('moves',item));
+    botFunction.push(bestSumMove);
     botFunction.push(getBotMove);
 
     let scores = [];
@@ -141,12 +142,12 @@ function calculateScoresDummy(bots){
     }
 
     return scores;
-
 }
 
 const Score = React.memo(({bots}) => {
 
     const scores = calculateScoresDummy(bots);
+    const sumMove = scores.pop();
     const sageScore = scores.pop();
 
     return (
@@ -155,7 +156,8 @@ const Score = React.memo(({bots}) => {
             {
             scores.map( (item,index) => <p key={index+1}>Bot{index+1} has score = {item}</p>)
             }
-            {<p>Sage Octopus has score = {sageScore}</p>}
+            <p>Sage Octopus has score = {sageScore}</p>
+            <p>BestSumMove has score = {sumMove}</p>     
         </div>
     );
 });

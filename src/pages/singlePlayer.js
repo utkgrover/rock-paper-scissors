@@ -5,7 +5,7 @@ import './components/commonStyles.css'
 import octoImage from './components/images/octopus.png';
 import stoneImage from './components/images/stone.png';
 import paperImage from './components/images/paper.jpeg';
-import scissorsImage from './components/images/scissors.png';
+import scissorsImage from './components/images/scissorsNew.jpg';
 import getBotMove from './bot/bot'; 
 import calculateWinner from './bot/calculateWinner';
 
@@ -30,7 +30,7 @@ function PlayerMenu({moves,setMoves,updateScore}){
     return (
         <div className="player-menu">
             <div className="sps-div">
-                <div className="full-width" onClick={()=>{onPlay('stone')}}>
+                <div className="full-width" onClick={()=>{onPlay('stone')}} >
                     <img src={stoneImage} alt="Stone" className="sps-image" />
                 </div>
                 <div className="full-width">STONE</div>
@@ -41,7 +41,7 @@ function PlayerMenu({moves,setMoves,updateScore}){
                 </div>
                 <div className="full-width">PAPER</div>
             </div>
-            <div className="sps-div" style={{float:"right"}}>
+            <div className="scissors-div" >
                 <div className="full-width" onClick={()=>{onPlay('scissors')}}>
                     <img src={scissorsImage} alt="Scissors" className="sps-image" />
                 </div>

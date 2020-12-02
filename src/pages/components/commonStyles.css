@@ -69,12 +69,18 @@
     float: left; 
 }
 
+.scissors-div{
+    width: 34%;
+    float: right; 
+}
+
 .sps-image{
     width: 150px;
     height: auto;
 }
 
 .player-menu{
+    display: inline-block;
     width: 100%;
     margin-top: 100px;
     margin-bottom: 60px;
