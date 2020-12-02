@@ -20,7 +20,7 @@ function PlayerMenu({moves,setMoves,updateScore}){
         const botMove = getBotMove(moves,"onPlay");
 
         const movesCopy = [...moves];
-        movesCopy.push([{myBot:botMove, opponent:playerMove}]);
+        movesCopy.push({myBot:botMove, opponent:playerMove});
         setMoves(movesCopy);
 
         const winner = calculateWinner(botMove , playerMove);
@@ -41,7 +41,7 @@ function PlayerMenu({moves,setMoves,updateScore}){
                 </div>
                 <div className="full-width">PAPER</div>
             </div>
-            <div className="sps-div">
+            <div className="sps-div" style={{float:"right"}}>
                 <div className="full-width" onClick={()=>{onPlay('scissors')}}>
                     <img src={scissorsImage} alt="Scissors" className="sps-image" />
                 </div>
@@ -51,10 +51,14 @@ function PlayerMenu({moves,setMoves,updateScore}){
     );
 }
 
-function MoveHistory({moves}){
+function MoveHistory({moves,player}){
     const sentences = [];
     moves.forEach( (item,index) => {
-        sentences.push(`${index+1}. octo-${item.myBot}, player-${item.opponent} , winner-${calculateWinner(item.myBot,item.opponent)==="bot"?"octo":"player"}`);
+        let winner = calculateWinner(item.myBot,item.opponent);
+        if(winner === 'bot') winner = 'Sage octo';
+        if(winner === 'player') winner = player;
+
+        sentences.push(`${index+1}. octo-${item.myBot}, player-${item.opponent} , winner-${winner}`);
     });
 
     return (
@@ -132,7 +136,7 @@ function SinglePlayer(){
                     </div>
                     {inputDisabled?<PlayerMenu moves={moves} setMoves={setMoves} updateScore={updateScore} />:""}
                     {
-                        inputDisabled?<MoveHistory moves={moves} />:""
+                        inputDisabled?<MoveHistory moves={moves} player={player}/>:""
                     }
                 </div>
             </Content>
