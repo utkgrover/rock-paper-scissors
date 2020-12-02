@@ -27,7 +27,7 @@ function botvbot(bot1,bot2){
         }
     }
 
-    //20 real moves , if wrong move other player wins  , if both moves are wrong 0 to both 
+    //20 real moves , if wrong move other player wins  , if both moves are wrong -1 to both 
     for( let i=0 ;i<20 ;i++){
         const move1 = bot1(moves);
         const move2 = bot2(moves);
@@ -45,8 +45,11 @@ function botvbot(bot1,bot2){
         }else if(checkMove(move1)){
             scores[0]+=1;
             scores[1]-=1;
-        }else{
+        }else if(checkMove(move2)){
             scores[1]+=1;
+            scores[0]-=1;
+        }else{
+            scores[1]-=1;
             scores[0]-=1;
         }
     }
@@ -125,7 +128,7 @@ function botvbot(bot1,bot2){
 // }
 
 function calculateScoresDummy(bots){
-    
+    //try catch not working for bad functions 
     const botFunction = bots.map( item => new Function('moves',item));
     botFunction.push(bestSumMove);
     botFunction.push(getBotMove);
@@ -134,7 +137,7 @@ function calculateScoresDummy(bots){
     botFunction.forEach( item => scores.push(0));
     
     for( let i=0 ;i< botFunction.length ; i++){
-        for( let j=0; j<botFunction.length ; j++){
+        for( let j=i+1; j<botFunction.length ; j++){
             const roundScores = botvbot(botFunction[i],botFunction[j]);
             scores[i]+=roundScores[0];
             scores[j]+=roundScores[1];
