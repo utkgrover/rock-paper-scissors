@@ -63,6 +63,7 @@ function MoveHistory({moves,player}){
 
     return (
         <div className="full-width" style={{margin:"10px"}}>
+            <p></p>
             {
                 sentences.map( (i,index) => <p key={index}>{i}</p>)
             }

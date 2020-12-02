@@ -13,9 +13,52 @@ function checkMove(move){
     else return false;
 }
 
+function botvbot(bot1,bot2){
+    let scores = [0,0];
+    let moves = [];
+
+    //dummy moves
+    for( let i=0;i<5;i++){
+        const move1 = bot1(moves);
+        const move2 = bot2(moves);
+
+        if(checkMove(move1) && checkMove(move2)){
+            moves.push({myBot:move1,opponent:move2});
+        }
+    }
+
+    //20 real moves , if wrong move other player wins  , if both moves are wrong 0 to both 
+    for( let i=0 ;i<20 ;i++){
+        const move1 = bot1(moves);
+        const move2 = bot2(moves);
+        
+        if(checkMove(move1) && checkMove(move2)){
+            const winner = calculateWinner(move1,move2);
+            if(winner === 'player'){
+                scores[1]+=1;
+                scores[0]-=1;
+            } else if (winner === 'bot'){
+                scores[0]+=1;
+                scores[1]-=1;
+            }
+            moves.push({myBot:move1,opponent:move2});
+        }else if(checkMove(move1)){
+            scores[0]+=1;
+            scores[1]-=1;
+        }else{
+            scores[1]+=1;
+            scores[0]-=1;
+        }
+    }
+
+    return scores;
+}
+
 function calculateScores(bots){
-    let scores = [];
-    for(let i=0 ;i<bots.length+1; i++) scores.push(0);
+    let scores = [0];
+    //for(let i=0 ;i<bots.length+1; i++) scores.push(0);
+    bots.forEach( item => scores.push(0));
+    const botFunction = bots.map( item => new Function('moves',item));
 
     for(let i=0 ; i<bots.length ; i++){
 
@@ -24,14 +67,14 @@ function calculateScores(bots){
 
         for(let x=0 ; x<5 ; x++){
             const move2 = bot1(octomoves);
-            const move1 = getBotMove(octomoves);
+            const move1 = getBotMove(octomoves,'botFight');
 
             if( checkMove(move1) && checkMove(move2)) octomoves.push({myBot:move1,opponent:move2});
         }
 
         for(let x=0 ; x<20 ; x++){
             const move2 = bot1(octomoves);
-            const move1 = getBotMove(octomoves);
+            const move1 = getBotMove(octomoves,'botFight');
 
             //my bot will always make the correct move  
             if( checkMove(move2)){
@@ -81,17 +124,41 @@ function calculateScores(bots){
     return scores;
 }
 
-function Score({bots}){
+function calculateScoresDummy(bots){
+    
+    const botFunction = bots.map( item => new Function('moves',item));
+    botFunction.push(getBotMove);
 
-    const scores = calculateScores(bots);
+    let scores = [];
+    botFunction.forEach( item => scores.push(0));
+    
+    for( let i=0 ;i< botFunction.length ; i++){
+        for( let j=0; j<botFunction.length ; j++){
+            const roundScores = botvbot(botFunction[i],botFunction[j]);
+            scores[i]+=roundScores[0];
+            scores[j]+=roundScores[1];
+        }
+    }
+
+    return scores;
+
+}
+
+const Score = React.memo(({bots}) => {
+
+    const scores = calculateScoresDummy(bots);
+    const sageScore = scores.pop();
 
     return (
         <div className="full-width" style={{margin:"15px",padding:"15px"}}>
-            {scores.map( (item,index) => <p>Bot{index+1} has score - {item}</p>)}
-            {<p>Sage Octopus has score - {scores[scores.length-1]}</p>}
+            <p></p>
+            {
+            scores.map( (item,index) => <p key={index+1}>Bot{index+1} has score = {item}</p>)
+            }
+            {<p>Sage Octopus has score = {sageScore}</p>}
         </div>
     );
-}
+});
 
 function BotFight(){
     const [input,setInput] = useState("");
@@ -131,12 +198,13 @@ function BotFight(){
                         </div>
                         <div className="quarter-width">
                            <Button onClick={ () => {
-                               submitBot(input);
                                setInput("");
+                               setBots([]);
                             }} danger type="primary">Reset All Bots</Button> 
                         </div>
                         <div className="quarter-width">
                            <Button onClick={()=>{
+                               submitBot(input);
                                setInput("");
                             }} type="primary">Submit</Button> 
                         </div>
